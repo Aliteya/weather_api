@@ -1,3 +1,3 @@
 from .query_repo import QueryRepo
 
-__all__ = ["QuaryRepo"]
+__all__ = ["QueryRepo"]

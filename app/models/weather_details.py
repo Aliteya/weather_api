@@ -6,7 +6,7 @@ class WeatherDetail(Base):
     __tablename__ = "weather_details"
 
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False, index=True)
-    temperature: Mapped[int] = mapped_column(nullable=False)
+    temperature: Mapped[float] = mapped_column(nullable=False)
     weather_description: Mapped[str] = mapped_column(nullable=False)
 
     query: Mapped["WeatherQuery"] = relationship(back_populates="detail")

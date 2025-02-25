@@ -1,12 +1,35 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 from ..models import City, WeatherDetail, WeatherQuery
 
 class QueryRepo():
     def __init__(self, session: AsyncSession):
         self.session = session
+
+    async def get_history(self):
+        query = (select(WeatherQuery)
+                    .options(
+                        selectinload(WeatherQuery.city),
+                        selectinload(WeatherQuery.detail),
+                    )
+                )
+        result = await self.session.execute(query)
+        data = result.scalars().all()
+        transformed_data = [
+            {
+                "city_name": query.city.name,
+                "detail": {
+                    "weather_description": query.detail.weather_description,
+                    "temperature": query.detail.temperature,
+                },
+                "query_timestamp": query.query_timestamp,
+            }
+            for query in data
+        ]
+        return transformed_data
 
     async def save_query(self, city_name: str, weather: dict):
         try:
@@ -32,5 +55,5 @@ class QueryRepo():
                 self.session.add(weather_query)
                 await self.session.commit()
         except SQLAlchemyError as e: 
-            raise HTTPException(status_code=500, detail="Internal server error")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
