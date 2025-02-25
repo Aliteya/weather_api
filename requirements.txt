@@ -3,5 +3,5 @@ uvicorn
 sqlalchemy
 httpx
 pytest
-alembic
 pydantic-settings
+asyncpg
