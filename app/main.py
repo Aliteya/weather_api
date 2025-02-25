@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from .database import init_db, close_db_connections
 from .controllers import weather_router
-# from .models import Base
-# from .database import engine
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
@@ -18,8 +16,6 @@ version = "v1"
 app = FastAPI(lifespan=life_span)
 
 app.include_router(weather_router)
-
-# Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 async def root():
