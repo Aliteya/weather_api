@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История запросов</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-image: linear-gradient(to bottom, #ffd7d7, #ffe6e6);
+            padding: 50px;
+            text-align: center;
+        }
+        h1 {
+            color: #ff69b4;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none; 
+            padding: 0;
+        }
+        li {
+            background-color: #ff99cc;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            width: 80%;
+            margin: 0 auto;
+        }
+        .query-info {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .query-info span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>История запросов</h1>
+    <ul>
+    {% for query in history %}
+        <li>
+            <div class="query-info">
+                <span>Город:</span> {{ query.city_name }}<br>
+                <span>Дата:</span> {{ query.query_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+                <span>Прогноз:</span> {{ query.detail.weather_description }} ({{ query.detail.temperature }}°C)
+            </div>
+        </li>
+    {% else %}
+        <li>Нет записей в истории.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
+
