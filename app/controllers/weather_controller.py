@@ -12,35 +12,38 @@ templates = Jinja2Templates(directory="templates")
 
 weather_router = APIRouter(prefix="/weather")
 
+def get_query_repo(session: AsyncSession = Depends(get_session)) -> QueryRepo:
+    return QueryRepo(session)
+
 @weather_router.get("/form", response_class=HTMLResponse)
 async def get_weather_form(request: Request):
-    return templates.TemplateResponse("weather_form.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="weather_form.html")
 
 @weather_router.post("/get", response_class=HTMLResponse)
-async def get_weather(request: Request, city: str = Form(...), session: AsyncSession=Depends(get_session)):
+async def get_weather(request: Request, city: str = Form(...), repo: QueryRepo=Depends(get_query_repo)):
     try:
-        repo = QueryRepo(session)
         res = await get_weather_from_api(city)
         await repo.save_query(city, res.model_dump())
-        return templates.TemplateResponse("weather.html", {"request": request, "city": city, "temperature": res.temperature, "description": res.weather_description})
+        return templates.TemplateResponse(request, "weather.html", context={"city": city, "temperature": res.temperature, "description": res.weather_description})
     except Exception as e:
-        return templates.TemplateResponse(
-            "error.html",
-            {"request": request, "error_code": 404, "error_message": "Не удалось получить данные о погоде."},
+        return templates.TemplateResponse( 
+            request=request,
+            name="error.html",
+            context={"error_code": 404, "error_message": "Не удалось получить данные о погоде."},
             status_code=status.HTTP_404_NOT_FOUND
         )
 
     
 @weather_router.get("/history", response_class=HTMLResponse)
-async def get_query_history(request: Request, session: AsyncSession=Depends(get_session)):
+async def get_query_history(request: Request, repo: QueryRepo=Depends(get_query_repo)):
     try:
-        repo = QueryRepo(session)
         res = await repo.get_history()
-        return templates.TemplateResponse("history.html",  {"request": request, "history": res})
+        return templates.TemplateResponse(request, "history.html",  {"history": res})
     except Exception as e:
         return templates.TemplateResponse(
-            "error.html",
-            {"request": request, "error_code": 404, "error_message": "Не удалось получить историю запросов."},
+            request=request,
+            name="error.html",
+            context={"error_code": 404, "error_message": "Не удалось получить историю запросов."},
             status_code=status.HTTP_404_NOT_FOUND
         )
     

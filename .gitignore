@@ -7,3 +7,4 @@
 /app/utils/__pycache__
 /app/controllers/__pycache__
 /app/repository/__pycache__
+tests/__pycache__/

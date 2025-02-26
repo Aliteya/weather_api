@@ -3,6 +3,7 @@ uvicorn
 sqlalchemy
 httpx
 pytest
+pytest-asyncio
 pydantic-settings
 asyncpg
 jinja2
